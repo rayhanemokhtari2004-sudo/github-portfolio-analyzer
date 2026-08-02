@@ -13,3 +13,13 @@ class GitHubAPI:
             return response.json()
 
         return None
+
+    def get_repositories(self, username):
+        url = f"{self.BASE_URL}/{username}/repos"
+
+        response = requests.get(url)
+
+        if response.status_code == 200:
+            return response.json()
+
+        return []
