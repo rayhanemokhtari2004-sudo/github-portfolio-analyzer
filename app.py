@@ -3,13 +3,21 @@ import pandas as pd
 
 from api.github_api import GitHubAPI
 from services.analyzer import PortfolioAnalyzer
+from utils.charts import Charts
 
 
-# Initialisation
-
+# ==========================
+# Initialization
+# ==========================
 
 api = GitHubAPI()
 analyzer = PortfolioAnalyzer()
+charts = Charts()
+
+
+# ==========================
+# Page Configuration
+# ==========================
 
 st.set_page_config(
     page_title="GitHub Portfolio Analyzer",
@@ -17,126 +25,356 @@ st.set_page_config(
     layout="wide"
 )
 
-st.title("📊 GitHub Portfolio Analyzer")
-st.write("Analyze any public GitHub profile.")
 
-username = st.text_input("GitHub Username")
+# ==========================
+# Sidebar
+# ==========================
+
+st.sidebar.title(
+    "GitHub Portfolio Analyzer"
+)
+
+username = st.sidebar.text_input(
+    "GitHub Username"
+)
+
+analyze = st.sidebar.button(
+    "Analyze"
+)
 
 
-# Analyse
+# ==========================
+# Header
+# ==========================
+
+st.title(
+    "GitHub Portfolio Analyzer"
+)
+
+st.write(
+    "Analyze any GitHub profile and discover portfolio statistics."
+)
 
 
-if st.button("Analyze"):
 
-    if username.strip() == "":
-        st.warning("Please enter a GitHub username.")
-        st.stop()
+# ==========================
+# Analysis
+# ==========================
 
-    user = api.get_user(username)
+if analyze:
 
-    if not user:
-        st.error("GitHub user not found.")
-        st.stop()
 
-    repositories = api.get_repositories(username)
+    if username == "":
 
-   
-    # Profile
-   
-
-    st.header("👤 Profile")
-
-    st.write(f"**Name:** {user.get('name')}")
-    st.write(f"**Login:** {user.get('login')}")
-    st.write(f"**Bio:** {user.get('bio')}")
-
-    col1, col2, col3 = st.columns(3)
-
-    col1.metric("Repositories", user["public_repos"])
-    col2.metric("Followers", user["followers"])
-    col3.metric("Following", user["following"])
-
-  
-    # Statistics
-  
-
-    st.header("📊 Statistics")
-
-    col1, col2 = st.columns(2)
-
-    col1.metric(
-        "⭐ Total Stars",
-        analyzer.total_stars(repositories)
-    )
-
-    col2.metric(
-        "🍴 Total Forks",
-        analyzer.total_forks(repositories)
-    )
-
-    popular = analyzer.most_popular_repository(repositories)
-
-    if popular:
-        st.success(
-            f"🏆 Most Popular Repository : {popular['name']}"
+        st.warning(
+            "Please enter a GitHub username."
         )
 
-    
-    # Languages
-    
+        st.stop()
 
-    st.header("💻 Languages")
 
-    languages = analyzer.languages_used(repositories)
+
+    # ======================
+    # Get GitHub Data
+    # ======================
+
+    user = api.get_user(
+        username
+    )
+
+
+    if not user:
+
+        st.error(
+            "GitHub user not found."
+        )
+
+        st.stop()
+
+
+
+    repositories = api.get_repositories(
+        username
+    )
+
+
+
+    # ======================
+    # Profile
+    # ======================
+
+    st.header(
+        "👤 Profile"
+    )
+
+
+    col1, col2 = st.columns(
+        [1, 3]
+    )
+
+
+    with col1:
+
+        st.image(
+            user["avatar_url"],
+            width=170
+        )
+
+
+    with col2:
+
+        st.subheader(
+            user["login"]
+        )
+
+
+        if user.get("name"):
+
+            st.write(
+                user["name"]
+            )
+
+
+        if user.get("bio"):
+
+            st.write(
+                user["bio"]
+            )
+
+
+        st.write(
+            f"Public repositories : {user['public_repos']}"
+        )
+
+        st.write(
+            f"Followers : {user['followers']}"
+        )
+
+        st.write(
+            f"Following : {user['following']}"
+        )
+
+
+
+    # ======================
+    # Statistics
+    # ======================
+
+    st.header(
+        "📊 Statistics"
+    )
+
+
+    col1, col2, col3 = st.columns(
+        3
+    )
+
+
+    col1.metric(
+        "⭐ Stars",
+        analyzer.total_stars(
+            repositories
+        )
+    )
+
+
+    col2.metric(
+        "🍴 Forks",
+        analyzer.total_forks(
+            repositories
+        )
+    )
+
+
+    popular = analyzer.most_popular_repository(
+        repositories
+    )
+
+
+    if popular:
+
+        col3.metric(
+            "🏆 Best Repository",
+            popular["name"]
+        )
+
+
+
+    # ======================
+    # Languages Chart
+    # ======================
+
+    st.header(
+        "🌍 Programming Languages"
+    )
+
+
+    languages = analyzer.languages_used(
+        repositories
+    )
+
 
     if languages:
-        st.bar_chart(languages)
+
+
+        charts.languages_chart(
+            languages
+        )
+
+
+        st.image(
+            "images/languages.png"
+        )
+
+
     else:
-        st.info("No language information available.")
 
-   
+        st.info(
+            "No language detected."
+        )
+
+
+
+    # ======================
+    # Stars Chart
+    # ======================
+
+    st.header(
+        "⭐ Repository Stars"
+    )
+
+
+    charts.stars_chart(
+        repositories
+    )
+
+
+    st.image(
+        "images/stars.png"
+    )
+
+
+
+    # ======================
+    # Forks Chart
+    # ======================
+
+    st.header(
+        "🍴 Repository Forks"
+    )
+
+
+    charts.forks_chart(
+        repositories
+    )
+
+
+    st.image(
+        "images/forks.png"
+    )
+
+
+
+    # ======================
+    # Portfolio Score
+    # ======================
+
+    st.header(
+        "🏅 Portfolio Score"
+    )
+
+
+    score = analyzer.portfolio_score(
+        user,
+        repositories
+    )
+
+
+    st.metric(
+        "Score",
+        f"{score}/100"
+    )
+
+
+    st.progress(
+        score / 100
+    )
+
+
+
+    # ======================
+    # Recommendations
+    # ======================
+
+    st.header(
+        "💡 Recommendations"
+    )
+
+
+    recommendations = analyzer.recommendations(
+        user,
+        repositories
+    )
+
+
+    if recommendations:
+
+
+        for item in recommendations:
+
+            st.warning(
+                item
+            )
+
+
+    else:
+
+        st.success(
+            "Excellent GitHub profile!"
+        )
+
+
+
+    # ======================
     # Repository Table
-   
+    # ======================
 
-    st.header("📂 Repositories")
+    st.header(
+        "📂 Repositories"
+    )
 
-    repo_data = []
+
+    data = []
+
 
     for repo in repositories:
 
-        repo_data.append(
-            {
-                "Repository": repo["name"],
-                "Language": repo["language"],
-                "Stars": repo["stargazers_count"],
-                "Forks": repo["forks_count"],
-            }
-        )
 
-    df = pd.DataFrame(repo_data)
+        data.append({
+
+            "Repository": repo["name"],
+
+            "Language": repo["language"],
+
+            "Stars": repo["stargazers_count"],
+
+            "Forks": repo["forks_count"],
+
+            "Visibility":
+                "Private"
+                if repo["private"]
+                else "Public"
+
+        })
+
+
+
+    df = pd.DataFrame(
+        data
+    )
+
 
     st.dataframe(
         df,
         use_container_width=True
     )
-
-    
-    # Repository Details
-    
-
-    st.header("📋 Repository Details")
-
-    for repo in repositories:
-
-        with st.expander(repo["name"]):
-
-            st.write(f"**Description:** {repo['description']}")
-            st.write(f"**Language:** {repo['language']}")
-            st.write(f"**Stars:** ⭐ {repo['stargazers_count']}")
-            st.write(f"**Forks:** 🍴 {repo['forks_count']}")
-            st.write(f"**Default Branch:** {repo['default_branch']}")
-            st.write(f"**Created At:** {repo['created_at']}")
-            st.write(f"**Updated At:** {repo['updated_at']}")
-            st.write(f"**Repository URL:** {repo['html_url']}")
-
-    st.success("Analysis completed successfully!")

@@ -37,3 +37,59 @@ class PortfolioAnalyzer:
                     languages[language] = 1
 
         return languages
+
+    def portfolio_score(self, user, repositories):
+        score = 0
+
+        # Nombre de dépôts publics (max 30 points)
+        score += min(user["public_repos"] * 2, 30)
+
+        # Nombre de followers (max 20 points)
+        score += min(user["followers"], 20)
+
+        # Nombre total d'étoiles (max 30 points)
+        score += min(self.total_stars(repositories), 30)
+
+        # Dépôts ayant une description (max 20 points)
+        described = 0
+
+        for repo in repositories:
+            if repo["description"]:
+                described += 1
+
+        score += min(described * 2, 20)
+
+        return score
+
+    def recommendations(self, user, repositories):
+
+        recommendations = []
+
+        if user["public_repos"] < 5:
+            recommendations.append(
+                "Create more public repositories."
+            )
+
+        if user["followers"] < 10:
+            recommendations.append(
+                "Increase your GitHub visibility."
+            )
+
+        if self.total_stars(repositories) < 10:
+            recommendations.append(
+                "Work on projects that attract stars."
+            )
+
+        missing_description = False
+
+        for repo in repositories:
+            if not repo["description"]:
+                missing_description = True
+                break
+
+        if missing_description:
+            recommendations.append(
+                "Add descriptions to all repositories."
+            )
+
+        return recommendations
