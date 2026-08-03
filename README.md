@@ -1,88 +1,127 @@
-# 📊 GitHub Portfolio Analyzer
+# GitHub Portfolio Analyzer
 
-A modern, professional Python and **Streamlit** dashboard designed to analyze public GitHub profiles, evaluate portfolio health, visualize key repository metrics, and generate executive CSV and PDF reports.
+## Présentation
 
----
-
-## 🌟 Key Features
-
-* **Profile Overview**: Displays avatar, bio, follower count, following count, and public repository counts.
-* **Portfolio Metrics**: Calculates aggregate star count, fork count, and identifies the user's top-performing repository.
-* **Portfolio Scoring Algorithm**: Evaluates profile quality on a 0–100 scale using repository count, star counts, follower engagement, and description completeness.
-* **Actionable Recommendations**: Automatically highlights profile optimization opportunities.
-* **Interactive & Static Visualizations**: Interactive Plotly charts (Language breakdown donut chart, Stars bar chart, Forks bar chart) alongside Matplotlib image exports.
-* **CSV Export**: One-click download of all repository details encoded in UTF-8 format (`<username>_repositories.csv`).
-* **Professional PDF Export**: Generates a PDF audit report featuring user details, avatar image, executive metrics summary, recommendations, and structured repository tables (`<username>_portfolio_report.pdf`).
-* **Robust Error Handling**: Friendly error banners for missing usernames, 404 non-existent users, API rate limits, and network connection drops.
-* **Performance Caching**: Uses Streamlit `@st.cache_data` caching to minimize redundant GitHub API calls.
+GitHub Portfolio Analyzer est une application développée en **Python** avec **Streamlit** permettant d'analyser un profil GitHub public. Elle récupère les données via l'API GitHub, génère des statistiques, calcule un score de portfolio et propose des visualisations interactives ainsi que des exports au format CSV et PDF.
 
 ---
 
-## 🏗️ Project Architecture
+## Fonctionnalités
 
-```
+- Analyse d'un profil GitHub public
+- Récupération des informations utilisateur
+- Analyse des dépôts
+- Calcul d'un score de portfolio
+- Répartition des langages de programmation
+- Graphiques interactifs avec Plotly
+- Graphiques statistiques avec Matplotlib
+- Export des données en CSV
+- Génération d'un rapport PDF
+- Interface moderne avec Streamlit
+- Gestion des erreurs (utilisateur introuvable, limite API, erreurs réseau)
+
+---
+
+
+## Architecture du projet
+
+```text
 github-portfolio-analyzer/
 │
-├── app.py                  # Main Streamlit web application & UI dashboard
-├── main.py                 # CLI interface for command-line execution
-├── requirements.txt        # Python package dependencies
-├── README.md               # Project documentation
-│
 ├── api/
-│   └── github_api.py       # GitHub REST API client & session handler
-│
+│   └── github_api.py
 ├── services/
-│   └── analyzer.py         # Business logic for portfolio scoring & analytics
-│
+│   └── analyzer.py
 ├── utils/
-│   ├── charts.py           # Matplotlib static chart generator
-│   ├── plotly_charts.py    # Plotly interactive chart generator
-│   └── pdf_generator.py    # ReportLab PDF report generation engine
-│
-└── images/                 # Saved chart image artifacts
+│   ├── charts.py
+│   ├── plotly_charts.py
+│   └── pdf_generator.py
+├── assets/
+├── app.py
+├── requirements.txt
+└── README.md
 ```
 
 ---
 
-## 🚀 Quick Start Guide
+## Technologies
 
-### 1. Prerequisites
+- Python
+- Streamlit
+- GitHub REST API
+- Requests
+- Pandas
+- Plotly
+- Matplotlib
+- ReportLab
 
-Ensure you have Python 3.9+ installed.
+---
 
-### 2. Installation
-
-Clone the repository and install the required dependencies:
+## Installation
 
 ```bash
+git clone https://github.com/rayhanemokhtari2004-sudo/github-portfolio-analyzer.git
+
 cd github-portfolio-analyzer
+
+python -m venv venv
+
+# Windows
+venv\Scripts\activate
+
+# Linux / macOS
+source venv/bin/activate
+
 pip install -r requirements.txt
-```
 
-### 3. Run the Web Application
-
-Launch the Streamlit dashboard:
-
-```bash
 streamlit run app.py
 ```
 
-The application will automatically open in your default browser at `http://localhost:8501`.
+---
 
-### 4. Run CLI Mode (Optional)
+## Utilisation
 
-Alternatively, run the analyzer directly in your terminal:
-
-```bash
-python main.py
-```
+1. Lancez l'application.
+2. Saisissez un nom d'utilisateur GitHub.
+3. Cliquez sur **Analyser**.
+4. Consultez les statistiques et les graphiques.
+5. Téléchargez les résultats au format CSV ou PDF.
 
 ---
 
-## 🛠️ Technologies Used
+## Calcul du score
 
-* **Frontend & Dashboard**: Streamlit, Custom CSS
-* **Data Processing**: Pandas
-* **API Integration**: Requests (GitHub REST API v3)
-* **Visualization**: Plotly Express, Matplotlib
-* **PDF Report Generation**: ReportLab
+Le score du portfolio est calculé à partir de plusieurs indicateurs, notamment :
+
+- Nombre de dépôts
+- Nombre d'étoiles
+- Nombre de forks
+- Nombre d'abonnés
+- Diversité des langages
+- Activité globale du profil
+
+---
+
+## Exports
+
+### CSV
+
+- Dépôts
+- Langages
+- Étoiles
+- Forks
+- Visibilité
+- URL
+
+### PDF
+
+- Informations du profil
+- Statistiques
+- Score du portfolio
+- Répartition des langages
+- Top dépôts
+- Date de génération
+
+---
+
+
